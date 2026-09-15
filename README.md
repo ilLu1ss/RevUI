@@ -319,7 +319,7 @@ Cada botón (**exento de la regla del tema**: acepta colores custom; si no se pa
 | `callback`  | `function` | `nil`     | Se ejecuta al hacer click.                                         |
 
 ```lua
---[[
+
     ═══════════════════════════════════════════════════════════════
     Card.lua — API
     ═══════════════════════════════════════════════════════════════
@@ -444,7 +444,7 @@ Cada botón (**exento de la regla del tema**: acepta colores custom; si no se pa
         -- instancia:
         card.instance.BackgroundTransparency = 0.5
         card.instance:Destroy()
-]]
+
 ```
 
 - Sin `color`, los botones quedan **transparentes con solo el icono/texto** (como los botones play/star de las cards de emotes); el hover les da un fondo `surface2` del tema.
