@@ -1,0 +1,22 @@
+* [Inicio](/README.md)
+* Getting Started
+  * [Instalación](getting-started/installation.md)
+  * [Inicio rápido](getting-started/quickstart.md)
+  * [Temas](getting-started/themes.md)
+* UI
+  * [Window](ui/window.md)
+  * [Tab](ui/tab.md)
+  * [Dialog](ui/dialog.md)
+  * [Notifications](ui/notifications.md)
+* Elements
+  * [Button](elements/button.md)
+  * [Toggle](elements/toggle.md)
+  * [Slider](elements/slider.md)
+  * [Dropdown](elements/dropdown.md)
+  * [Input](elements/input.md)
+  * [Keybind](elements/keybind.md)
+  * [ColorPicker](elements/colorpicker.md)
+  * [Card](elements/card.md)
+  * [Section](elements/section.md)
+  * [Stack (HStack/VStack)](elements/stack.md)
+  * [Space](elements/space.md)

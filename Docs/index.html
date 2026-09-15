@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>RevUI - Documentación</title>
+  <meta name="description" content="RevUI — UI Library para Roblox. Simple, rápida y declarativa.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/dark.css">
+  <style>
+    :root { --theme-color: #8b5cf6; }
+    .markdown-section code { font-family: Consolas, monospace; }
+    .rev-hero { text-align: center; padding: 40px 0 10px 0; }
+    .rev-hero h1 { font-size: 3rem; margin: 0; }
+    .rev-hero p { opacity: .7; }
+    .rev-badges img { margin: 2px; }
+    .example-img {
+      width: 100%; max-width: 560px; border-radius: 12px;
+      border: 1px dashed #8b5cf6; display: block; margin: 12px auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Cargando RevUI docs...</div>
+  <script>
+    window.$docsify = {
+      name: 'RevUI',
+      repo: '',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      search: 'auto',
+      copyCode: { buttonText: 'Copiar', successText: 'Copiado!' },
+    }
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-lua.min.js"></script>
+</body>
+</html>
