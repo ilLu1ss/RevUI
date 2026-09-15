@@ -510,6 +510,20 @@ function e.getIcon(f)
 return d[f]or""
 end
 
+
+
+
+
+
+
+function e.soften(f)
+if typeof(f)~="Color3"then return f end
+local g=(f.R+f.G+f.B)/3
+local h=f:Lerp(Color3.new(g,g,g),0.15)
+local i,j,k=h:ToHSV()
+return Color3.fromHSV(i,j,math.max(0,k*0.95))
+end
+
 function e.merge(f,g)
 g=g or{}
 for h,i in pairs(g)do
@@ -671,11 +685,6 @@ end,
 }
 
 return c end function a.f():typeof(__modImpl())local b=a.cache.f if not b then b={c=__modImpl()}a.cache.f=b end return b.c end end do local function __modImpl()
-
-
-
-
-
 
 
 
@@ -1129,17 +1138,30 @@ g=g or{}
 local i=g.description or g.desc or""
 local j=h.compact==true
 local k=h.controlWidth or 0
-local l=h.controlHeight or 24
 
-local m=(i~=""and(h.height or 44)+12)or(h.height or 44)
+
+local l=h.heightScale or 1.4
+
+
+local m=h.controlScale or l
+local n=math.floor((h.height or 44)*l+0.5)
+local o=math.floor(12*l+0.5)
+
+local p=o
+if h.maxDescExtra~=nil then
+p=math.min(o,h.maxDescExtra)
+end
+local q=math.floor((h.controlHeight or 24)*m+0.5)
+
+local r=(i~=""and n+p)or n
 
 if j and k>0 then
-m+=l+10
+r+=q+10
 end
 
-local n=c.create("Frame",{
+local s=c.create("Frame",{
 Name=g.title or"Element",
-Size=UDim2.new(1,-2,0,m),
+Size=UDim2.new(1,-2,0,r),
 BackgroundColor3=g.color or d.surface2,
 BorderSizePixel=0,
 CornerRadius=UDim.new(0,8),
@@ -1148,75 +1170,76 @@ ClipsDescendants=h.clips==true,
 },f)
 
 if not g.color then
-b.bind(n,"BackgroundColor3","surface2")
+b.bind(s,"BackgroundColor3","surface2")
 end
 
 
 if g.border==true then
-local o=c.create("UIStroke",{
+local t=c.create("UIStroke",{
 Color=d.border,
 Thickness=1,
 Transparency=0.4,
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
-},n)
-b.bind(o,"Color","border")
+},s)
+b.bind(t,"Color","border")
 end
 
 
 
 
-local o=(not j and k>0)and(k+22)or 26
 
-local p=c.create("TextLabel",{
+local t=(not j and k>0)and(k+22)or 26
+
+local u=c.create("TextLabel",{
 BackgroundTransparency=1,
-Position=UDim2.new(0,12,0,i~=""and 8 or 9),
-Size=UDim2.new(1,-o,0,15),
+Position=UDim2.new(0,12,0,i~=""and 10 or 12),
+Size=UDim2.new(1,-t,0,20),
 FontRole=g.fontRole or"extra",
 Text=g.title or"",
 TextColor3=d.text,
-TextSize=13,
+TextSize=14,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextTruncate=Enum.TextTruncate.AtEnd,
-},n)
+},s)
 
-b.bind(p,"TextColor3","text")
+b.bind(u,"TextColor3","text")
 
 if i~=""then
-local q=c.create("TextLabel",{
+local v=c.create("TextLabel",{
 BackgroundTransparency=1,
-Position=UDim2.new(0,12,0,26),
-Size=UDim2.new(1,-o,0,12),
+Position=UDim2.new(0,12,0,34),
+Size=UDim2.new(1,-t,0,15),
 FontRole=g.descFontRole or"semibold",
 Text=i,
 TextColor3=d.textMuted,
-TextSize=11,
+TextSize=12,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextTruncate=Enum.TextTruncate.AtEnd,
-},n)
-b.bind(q,"TextColor3","textMuted")
+},s)
+b.bind(v,"TextColor3","textMuted")
 end
 
-local q
+local v
 if k>0 then
 if j then
 
-q=c.create("Frame",{
+v=c.create("Frame",{
 BackgroundTransparency=1,
-Position=UDim2.new(0,10,1,-(l+10)),
-Size=UDim2.new(1,-20,0,l),
-},n)
+Position=UDim2.new(0,10,1,-(q+10)),
+Size=UDim2.new(1,-20,0,q),
+},s)
 else
 
-q=c.create("Frame",{
+v=c.create("Frame",{
 BackgroundTransparency=1,
 AnchorPoint=Vector2.new(1,0.5),
 Position=UDim2.new(1,-10,0.5,0),
-Size=UDim2.new(0,k,0,l),
-},n)
+Size=UDim2.new(0,k,0,q),
+},s)
 end
 end
 
-return n,p,q
+return s,u,v
 end
 
 
@@ -1264,101 +1287,105 @@ return e end function a.i():typeof(__modImpl())local b=a.cache.i if not b then b
 local b=a.b()
 local c=a.i()
 local d=a.g()
+local e=a.e()
 
-local e=b.palette
+local f=b.palette
 
-return function(f,g)
-g=g or{}
+return function(g,h)
+h=h or{}
 
-local h=g.description or g.desc or""
-local i=h~=""
+local i=h.description or h.desc or""
+local j=i~=""
 
 
 
-local j={}
-for k,l in pairs(g)do
-if k~="description"and k~="desc"then
-j[k]=l
+
+local k={}
+for l,m in pairs(h)do
+if l~="description"and l~="desc"then
+k[l]=m
 end
 end
 
-local k,l=c.row(f,j,{height=40})
-local m=g.color or e.surface2
-local n=g.align or g.textAlign or"center"
-local o=c.resolveTextAlign(n)
-local p=g.textColor or e.text
-local q=g.icon
-local r=g.iconSize or 14
-local s=q and(g.iconColor or p)or nil
+local l,m=c.row(g,k,{height=40,heightScale=1.25})
+
+local n=h.color~=nil
+local o=n and e.soften(h.color)or f.surface2
+local p=h.align or h.textAlign or"center"
+local q=c.resolveTextAlign(p)
+local r=h.textColor or f.text
+local s=h.icon
+local t=h.iconSize or 14
+local u=s and(h.iconColor or r)or nil
 
 
-local t=q~=nil and q~=""
-local u=t and 30 or 12
-local v=t and-42 or-24
+local v=s~=nil and s~=""
+local w=v and 30 or 12
+local x=v and-42 or-24
 
-k.BackgroundColor3=m
-l.TextColor3=p
-l.TextXAlignment=o
-l.TextYAlignment=Enum.TextYAlignment.Center
+l.BackgroundColor3=o
+m.TextColor3=r
+m.TextXAlignment=q
+m.TextYAlignment=Enum.TextYAlignment.Center
 
 
 
-local w=g.color~=nil
-local x=g.textColor~=nil
-if x then
-l.TextColor3=p
+
+local y=h.textColor~=nil
+if y then
+m.TextColor3=r
 end
 
-if t then
-d.icon(q,r,{
-Position=UDim2.new(0,14,0.5,-(r/2)),
-ImageColor3=s,
-},k)
+if v then
+d.icon(s,t,{
+Position=UDim2.new(0,14,0.5,-(t/2)),
+ImageColor3=u,
+},l)
 end
 
-if i then
+if j then
 
 
 
-l.Position=UDim2.new(0,u,0,7)
-l.Size=UDim2.new(1,v,0,14)
+m.Position=UDim2.new(0,w,0,7)
+m.Size=UDim2.new(1,x,0,14)
 
-local y=d.create("TextLabel",{
+local z=d.create("TextLabel",{
 BackgroundTransparency=1,
-Position=UDim2.new(0,u,0,22),
-Size=UDim2.new(1,v,0,11),
-FontRole=g.descFontRole or"semibold",
-Text=h,
-TextColor3=e.textMuted,
+Position=UDim2.new(0,w,0,22),
+Size=UDim2.new(1,x,0,11),
+FontRole=h.descFontRole or"semibold",
+Text=i,
+TextColor3=f.textMuted,
 TextSize=11,
-TextXAlignment=o,
+TextXAlignment=q,
 TextYAlignment=Enum.TextYAlignment.Center,
 TextTruncate=Enum.TextTruncate.AtEnd,
-},k)
-b.bind(y,"TextColor3","textMuted")
+},l)
+b.bind(z,"TextColor3","textMuted")
 else
 
-l.Position=UDim2.new(0,t and 30 or 0,0,0)
-l.Size=UDim2.new(1,v,1,0)
+m.Position=UDim2.new(0,v and 30 or 0,0,0)
+m.Size=UDim2.new(1,x,1,0)
 end
 
-local y=c.overlay(k)
+local z=c.overlay(l)
 
-if w then
-c.hover(k,m)
+if n then
+c.hover(l,o)
 else
-c.hover(k,function()return e.surface2 end)
+c.hover(l,function()return f.surface2 end)
 end
 
-y.MouseButton1Click:Connect(function()
-if g.callback then g.callback()end
+z.MouseButton1Click:Connect(function()
+if h.callback then h.callback()end
 end)
 
-local z={instance=k}
-function z.SetText(A,B)
-l.Text=B
+local A={instance=l}
+function A.SetText(B,C)
+m.Text=C
 end
-return z
+return A
 end end function a.j():typeof(__modImpl())local b=a.cache.j if not b then b={c=__modImpl()}a.cache.j=b end return b.c end end do local function __modImpl()
 local b=a.g()
 
@@ -1394,11 +1421,9 @@ local b=game:GetService"TweenService"
 local c=a.b()
 local d=a.g()
 local e=a.i()
+local f=a.e()
 
-local f=c.palette
-
-
-
+local g=c.palette
 
 
 
@@ -1406,54 +1431,86 @@ local f=c.palette
 
 
 
-return function(g,h)
-h=h or{}
-local i=h.description or h.desc or""local
 
-j, k, l=e.row(g,{
-title=h.title,
-description=i~=""and i or nil,
-color=h.color,
-order=h.order,
-border=h.border,
-},{height=44,controlWidth=42,controlHeight=24})
 
-local m=h.color~=nil
-local n=h.color
-local o=h.default==true
 
-local p=d.create("Frame",{
+return function(h,i)
+i=i or{}
+local j=i.description or i.desc or""
+
+
+
+
+
+local k=44
+local l=1.12
+local m=math.floor(k*l+0.5)local
+n, o, p=e.row(h,{
+title=i.title,
+description=j~=""and j or nil,
+color=nil,
+order=i.order,
+border=i.border,
+},{
+height=k,
+heightScale=l,
+controlWidth=42,controlHeight=24,
+maxDescExtra=math.floor(m*0.2+0.5),
+})
+
+local q=i.color~=nil
+local r=i.color
+local s=i.default==true
+
+local t=d.create("Frame",{
 Size=UDim2.new(1,0,1,0),
-CornerRadius=UDim.new(1,0),
-BorderSizePixel=0,
-},l)
-
-local q=d.create("Frame",{
-Size=UDim2.new(0,18,0,18),
-AnchorPoint=Vector2.new(0,0.5),
-BackgroundColor3=f.white,
 CornerRadius=UDim.new(1,0),
 BorderSizePixel=0,
 },p)
 
+local u=d.create("Frame",{
+Size=UDim2.new(0,26,0,26),
+AnchorPoint=Vector2.new(0,0.5),
+BackgroundColor3=g.white,
+CornerRadius=UDim.new(1,0),
+BorderSizePixel=0,
+},t)
+
+
+local function desat15(v)return f.soften(v)end
+
 
 local function onColor()
-return m and n or f.primary
+if q and typeof(r)=="Color3"then
+return desat15(r)
+end
+return g.primary
 end
 
-local function render(r)
-local s=UDim2.new(o and 1 or 0,o and-21 or 3,0.5,0)
-local t=o and onColor()or f.gray
-if r then
-b:Create(q,TweenInfo.new(0.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-Position=s,
+local function render(v)
+local w=UDim2.new(s and 1 or 0,s and-30 or 4,0.5,0)
+local x=s and onColor()or g.gray
+if v then
+
+b:Create(u,TweenInfo.new(0.25,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{
+Position=w,
 }):Play()
-b:Create(p,TweenInfo.new(0.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-BackgroundColor3=t,
+b:Create(t,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+BackgroundColor3=x,
 }):Play()
+
+local y=b:Create(u,TweenInfo.new(0.12,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+Size=UDim2.new(0,30,0,30),
+})
+y:Play()
+y.Completed:Connect(function()
+b:Create(u,TweenInfo.new(0.14,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+Size=UDim2.new(0,26,0,26),
+}):Play()
+end)
 else
-q.Position=s
-p.BackgroundColor3=t
+u.Position=w
+t.BackgroundColor3=x
 end
 end
 
@@ -1461,37 +1518,35 @@ render(false)
 
 
 c.onChange(function()
-p.BackgroundColor3=o and onColor()or f.gray
-q.BackgroundColor3=f.white
-end,j)
+t.BackgroundColor3=s and onColor()or g.gray
+u.BackgroundColor3=g.white
+end,n)
 
-local r=e.overlay(j)
-r.MouseButton1Click:Connect(function()
-o=not o
+local v=e.overlay(n)
+v.MouseButton1Click:Connect(function()
+s=not s
 render(true)
-if h.callback then h.callback(o)end
+if i.callback then i.callback(s)end
 end)
 
-local s={instance=j}
-function s.Set(t,u,v)
-o=u==true
+local w={instance=n}
+function w.Set(x,y,z)
+s=y==true
 render(true)
-if v~=false and h.callback then h.callback(o)end
+if z~=false and i.callback then i.callback(s)end
 end
-function s.Get(t)return o end
-return s
+function w.Get(x)return s end
+return w
 end end function a.l():typeof(__modImpl())local b=a.cache.l if not b then b={c=__modImpl()}a.cache.l=b end return b.c end end do local function __modImpl()
 local b=game:GetService"UserInputService"
-game:GetService"TweenService"
+local c=game:GetService"TweenService"
 
-local c=a.b()
-local d=a.g()
-local e=a.i()
+local d=a.b()
+local e=a.g()
+local f=a.i()
+local g=a.e()
 
-local f=c.palette
-
-
-
+local h=d.palette
 
 
 
@@ -1503,102 +1558,118 @@ local f=c.palette
 
 
 
-return function(g,h)
-h=h or{}
-local i=h.description or h.desc or""
 
-local j=h.compact==true local
 
-k, l=e.row(g,{
-title=h.title,
-description=i~=""and i or nil,
-color=h.color,
-order=h.order,
-border=h.border,
-},{height=52,controlWidth=0,compact=j})
 
-if i~=""then
-l.Position=UDim2.new(0,14,0,9)
+return function(i,j)
+j=j or{}
+local k=j.description or j.desc or""
+
+local l=j.compact==true local
+
+m, n=f.row(i,{
+title=j.title,
+description=k~=""and k or nil,
+color=j.color,
+order=j.order,
+border=j.border,
+},{height=52,controlWidth=0,compact=l})
+
+if k~=""then
+n.Position=UDim2.new(0,14,0,9)
 else
-l.Position=UDim2.new(0,14,0,12)
+n.Position=UDim2.new(0,14,0,12)
 end
 
 
 
 
-local m=j and 55 or 90
+local o=l and 55 or 90
 
 
-l.Size=UDim2.new(1,-(m+34),0,15)
+n.Size=UDim2.new(1,-(o+34),0,15)
 
-local n=h.min or 0
-local o=h.max or 100
-local p=h.step or 1
-local q=math.clamp(h.default or n,n,o)
+local p=j.min or 0
+local q=j.max or 100
+local r=j.step or 1
+local s=math.clamp(j.default or p,p,q)
 
-local r=d.create("TextLabel",{
+local t=e.create("TextLabel",{
 BackgroundTransparency=1,
 AnchorPoint=Vector2.new(1,0),
-Position=UDim2.new(1,-14,0,h.description and 9 or 8),
-Size=UDim2.new(0,m,0,16),
+Position=UDim2.new(1,-14,0,j.description and 9 or 8),
+Size=UDim2.new(0,o,0,16),
 FontRole="bold",
 Text="",
-TextColor3=f.text,
+TextColor3=h.text,
 TextSize=12,
 TextXAlignment=Enum.TextXAlignment.Right,
-},k)
-c.bind(r,"TextColor3","text")
+},m)
+d.bind(t,"TextColor3","text")
 
-local s=d.create("Frame",{
-Position=UDim2.new(0,14,1,-18),
-Size=UDim2.new(1,-28,0,5),
-BackgroundColor3=f.black,
+local u=e.create("Frame",{
+Position=UDim2.new(0,14,1,-26),
+Size=UDim2.new(1,-28,0,8),
+BackgroundColor3=h.black,
 CornerRadius=UDim.new(1,0),
 BorderSizePixel=0,
-},k)
+},m)
 
-local t=h.color~=nil
-local u=d.create("Frame",{
+local v=j.color~=nil
+
+local w=v and g.soften(j.color)or h.primary
+local x=e.create("Frame",{
 Size=UDim2.new(0,0,1,0),
-BackgroundColor3=h.color or f.primary,
+BackgroundColor3=w,
 CornerRadius=UDim.new(1,0),
 BorderSizePixel=0,
-},s)
+},u)
 
-local v=d.create("Frame",{
+local y=e.create("Frame",{
 AnchorPoint=Vector2.new(0.5,0.5),
 Position=UDim2.new(0,0,0.5,0),
-Size=UDim2.new(0,12,0,12),
-BackgroundColor3=f.white,
+Size=UDim2.new(0,18,0,18),
+BackgroundColor3=h.white,
 CornerRadius=UDim.new(1,0),
 BorderSizePixel=0,
-},s)
+},u)
 
-local function formatNumber(w)
-if p>=1 then return tostring(math.floor(w+0.5))end
-return string.format("%.1f",w)
+local function formatNumber(z)
+if r>=1 then return tostring(math.floor(z+0.5))end
+return string.format("%.1f",z)
 end
 
-local function render()
-local w=(q-n)/(o-n)
-u.Size=UDim2.new(w,0,1,0)
-v.Position=UDim2.new(w,0,0.5,0)
-r.Text=formatNumber(q)..(h.suffix or"")
+local function render(z)
+local A=(s-p)/(q-p)
+local B=UDim2.new(A,0,1,0)
+local C=UDim2.new(A,0,0.5,0)
+t.Text=formatNumber(s)..(j.suffix or"")
+if z then
+c:Create(x,TweenInfo.new(0.12,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+Size=B,
+}):Play()
+c:Create(y,TweenInfo.new(0.12,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+Position=C,
+}):Play()
+else
+x.Size=B
+y.Position=C
+end
 end
 
-render()
+render(false)
 
 
 
 
-local function setFromX(w)
-local x=math.clamp((w-s.AbsolutePosition.X)/math.max(s.AbsoluteSize.X,1),0,1)
-local y=n+(o-n)*x
-local z=math.floor(y/p+0.5)*p
-z=math.clamp(z,n,o)
-if z~=q then
-q=z
-render()
+local function setFromX(z)
+local A=math.clamp((z-u.AbsolutePosition.X)/math.max(u.AbsoluteSize.X,1),0,1)
+local B=p+(q-p)*A
+local C=math.floor(B/r+0.5)*r
+C=math.clamp(C,p,q)
+if C~=s then
+s=C
+render(false)
 return true
 end
 return false
@@ -1606,29 +1677,29 @@ end
 
 
 
-s.InputBegan:Connect(function(w)
-if w.UserInputType==Enum.UserInputType.MouseButton1
-or w.UserInputType==Enum.UserInputType.Touch then
-local x=setFromX(w.Position.X)
+u.InputBegan:Connect(function(z)
+if z.UserInputType==Enum.UserInputType.MouseButton1
+or z.UserInputType==Enum.UserInputType.Touch then
+local A=setFromX(z.Position.X)
 
-local y=b.InputChanged:Connect(function(y)
-if y.UserInputType==Enum.UserInputType.MouseMovement
-or y.UserInputType==Enum.UserInputType.Touch then
-if setFromX(y.Position.X)then
-x=true
+local B=b.InputChanged:Connect(function(B)
+if B.UserInputType==Enum.UserInputType.MouseMovement
+or B.UserInputType==Enum.UserInputType.Touch then
+if setFromX(B.Position.X)then
+A=true
 end
 end
 end)
 
-local z
-z=b.InputEnded:Connect(function(A)
-if A.UserInputType==Enum.UserInputType.MouseButton1
-or A.UserInputType==Enum.UserInputType.Touch then
-y:Disconnect()
-z:Disconnect()
+local C
+C=b.InputEnded:Connect(function(D)
+if D.UserInputType==Enum.UserInputType.MouseButton1
+or D.UserInputType==Enum.UserInputType.Touch then
+B:Disconnect()
+C:Disconnect()
 
-if x and h.callback then
-h.callback(q)
+if A and j.callback then
+j.callback(s)
 end
 end
 end)
@@ -1636,20 +1707,23 @@ end
 end)
 
 
-c.onChange(function()
-if not t then
-u.BackgroundColor3=f.primary
-end
-end,k)
 
-local w={instance=k}
-function w.Set(x,y,z)
-q=math.clamp(y,n,o)
-render()
-if z~=false and h.callback then h.callback(q)end
+d.onChange(function()
+if not v then
+x.BackgroundColor3=h.primary
+else
+x.BackgroundColor3=g.soften(j.color)
 end
-function w.Get(x)return q end
-return w
+end,m)
+
+local z={instance=m}
+function z.Set(A,B,C)
+s=math.clamp(B,p,q)
+render(true)
+if C~=false and j.callback then j.callback(s)end
+end
+function z.Get(A)return s end
+return z
 end end function a.m():typeof(__modImpl())local b=a.cache.m if not b then b={c=__modImpl()}a.cache.m=b end return b.c end end do local function __modImpl()
 local b=game:GetService"TweenService"
 local c=game:GetService"UserInputService"
@@ -1657,95 +1731,97 @@ local c=game:GetService"UserInputService"
 local d=a.b()
 local e=a.g()
 local f=a.i()
+local g=a.e()
 
-local g=d.palette
-local h=44
+local h=d.palette
+local i=44
 
-return function(i,j)
-j=j or{}
-local k=j.description or j.desc or""
+return function(j,k)
+k=k or{}
+local l=k.description or k.desc or""
 
-local l,m,n=f.row(i,{
-title=j.title,
-description=k~=""and k or nil,
-color=j.color,
-order=j.order,
-border=j.border,
-},{height=h,controlWidth=140,clips=false,compact=j.compact})
+local m,n,o=f.row(j,{
+title=k.title,
+description=l~=""and l or nil,
 
-if k~=""then
-m.Position=UDim2.new(0,14,0,9)
+color=k.color~=nil and g.soften(k.color)or nil,
+order=k.order,
+border=k.border,
+},{height=i,controlWidth=140,clips=false,compact=k.compact})
+
+if l~=""then
+n.Position=UDim2.new(0,14,0,9)
 else
-m.Position=UDim2.new(0,14,0,12)
+n.Position=UDim2.new(0,14,0,12)
 end
 
-l.ClipsDescendants=false
-if n and n.ClipsDescendants~=nil then
-n.ClipsDescendants=false
+m.ClipsDescendants=false
+if o and o.ClipsDescendants~=nil then
+o.ClipsDescendants=false
 end
 
-local o=j.options or{}
-local p=j.default or o[1]
-local q=false local r=
-j.color~=nil
+local p=k.options or{}
+local q=k.default or p[1]
+local r=false
+local s=k.color~=nil
 
 
 
 
-local s={}
-local function raiseAncestors(t)
-if t then
-s={}
-local u=l
-while u and u.Parent and not u:IsA"ScreenGui"do
-s[u]=u.ZIndex
-u.ZIndex=1000
-u=u.Parent
+local t={}
+local function raiseAncestors(u)
+if u then
+t={}
+local v=m
+while v and v.Parent and not v:IsA"ScreenGui"do
+t[v]=v.ZIndex
+v.ZIndex=1000
+v=v.Parent
 end
 else
-for u,v in pairs(s)do
+for v,w in pairs(t)do
 pcall(function()
-if u.Parent then u.ZIndex=v end
+if v.Parent then v.ZIndex=w end
 end)
 end
-s={}
+t={}
 end
 end
 
-local t=e.button({
+local u=e.button({
 Size=UDim2.new(1,0,1,0),
-BackgroundColor3=g.black,
-Text=p or"Seleccionar",
+BackgroundColor3=h.black,
+Text=q or"Seleccionar",
 TextSize=12,
 FontRole="semibold",
 TextXAlignment=Enum.TextXAlignment.Left,
 ZIndex=1,
-},n)
-d.bind(t,"BackgroundColor3","black")
-d.bind(t,"TextColor3","text")
-e.create("UIPadding",{PaddingLeft=UDim.new(0,10)},t)
+},o)
+d.bind(u,"BackgroundColor3","black")
+d.bind(u,"TextColor3","text")
+e.create("UIPadding",{PaddingLeft=UDim.new(0,10)},u)
 
-local u=e.icon("chevron-down",14,{
+local v=e.icon("chevron-down",14,{
 AnchorPoint=Vector2.new(1,0.5),
 Position=UDim2.new(1,-8,0.5,0),
-ImageColor3=g.textMuted,
+ImageColor3=h.textMuted,
 ZIndex=2,
-},t)
+},u)
 
-local v=e.create("Frame",{
+local w=e.create("Frame",{
 Position=UDim2.new(0,0,1,2),
 Size=UDim2.new(1,0,0,0),
-BackgroundColor3=g.surface,
+BackgroundColor3=h.surface,
 BorderSizePixel=0,
 Visible=false,
 ZIndex=10,
-},n)
-d.bind(v,"BackgroundColor3","surface")
+},o)
+d.bind(w,"BackgroundColor3","surface")
 
-local w=e.create("UIStroke",{Color=g.surface2,Thickness=1},v)
-d.bind(w,"Color","surface2")
+local x=e.create("UIStroke",{Color=h.surface2,Thickness=1},w)
+d.bind(x,"Color","surface2")
 
-local x=e.create("ScrollingFrame",{
+local y=e.create("ScrollingFrame",{
 Position=UDim2.new(0,4,0,4),
 Size=UDim2.new(1,-8,1,-8),
 BackgroundTransparency=1,
@@ -1754,80 +1830,80 @@ CanvasSize=UDim2.new(0,0,0,0),
 AutomaticCanvasSize=Enum.AutomaticSize.Y,
 ScrollBarThickness=2,
 ZIndex=11,
-},v)
+},w)
 
 
-local y=Instance.new"UIListLayout"
-y.Padding=UDim.new(0,4)
-y.SortOrder=Enum.SortOrder.LayoutOrder
-y.FillDirection=Enum.FillDirection.Vertical
-y.Parent=x
+local z=Instance.new"UIListLayout"
+z.Padding=UDim.new(0,4)
+z.SortOrder=Enum.SortOrder.LayoutOrder
+z.FillDirection=Enum.FillDirection.Vertical
+z.Parent=y
 
-local z={}
-local A
+local A={}
+local B
 
 
-local function pointInGui(B,C,D)
-if not B or not B.Visible then return false end
-local E=B.AbsolutePosition
-local F=B.AbsoluteSize
-return C>=E.X and C<=E.X+F.X
-and D>=E.Y and D<=E.Y+F.Y
+local function pointInGui(C,D,E)
+if not C or not C.Visible then return false end
+local F=C.AbsolutePosition
+local G=C.AbsoluteSize
+return D>=F.X and D<=F.X+G.X
+and E>=F.Y and E<=F.Y+G.Y
 end
 
 local function disconnectOutside()
-if A then
-A:Disconnect()
-A=nil
+if B then
+B:Disconnect()
+B=nil
 end
 end
 
-local B
+local C
 
 local function connectOutside()
 disconnectOutside()
-A=c.InputBegan:Connect(function(C,D)
+B=c.InputBegan:Connect(function(D,E)
 
-if C.UserInputType~=Enum.UserInputType.MouseButton1
-and C.UserInputType~=Enum.UserInputType.Touch then
+if D.UserInputType~=Enum.UserInputType.MouseButton1
+and D.UserInputType~=Enum.UserInputType.Touch then
 return
 end
 
-local E,F=C.Position.X,C.Position.Y
+local F,G=D.Position.X,D.Position.Y
 
 
-if pointInGui(t,E,F)then return end
+if pointInGui(u,F,G)then return end
 
 
-if pointInGui(v,E,F)then return end
+if pointInGui(w,F,G)then return end
 
 
-B(false)
+C(false)
 end)
 end
 
-B=function(C)
-q=C
-if C then
-v.Visible=true
+C=function(D)
+r=D
+if D then
+w.Visible=true
 raiseAncestors(true)
 connectOutside()
 else
 disconnectOutside()
 end
 
-local D=math.min(#o*32+8,160)
+local E=math.min(#p*32+8,160)
 
-b:Create(v,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-Size=UDim2.new(1,0,0,C and D or 0),
+b:Create(w,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+Size=UDim2.new(1,0,0,D and E or 0),
 }):Play()
 
-b:Create(u,TweenInfo.new(0.2),{Rotation=C and 180 or 0}):Play()
+b:Create(v,TweenInfo.new(0.2),{Rotation=D and 180 or 0}):Play()
 
-if not C then
+if not D then
 task.delay(0.2,function()
-if not q then
-v.Visible=false
+if not r then
+w.Visible=false
 raiseAncestors(false)
 end
 end)
@@ -1835,78 +1911,83 @@ end
 end
 
 
+
+local function selectedColor()
+if s then return g.soften(k.color)end
+return h.primary
+end
 local function paintOptions()
-for C,D in ipairs(z)do
-D.BackgroundColor3=o[C]==p and g.primary or g.surface2
-D.TextColor3=g.text
+for D,E in ipairs(A)do
+E.BackgroundColor3=p[D]==q and selectedColor()or h.surface2
+E.TextColor3=h.text
 end
 end
 
 local function buildOptions()
-for C,D in ipairs(z)do D:Destroy()end
-table.clear(z)
-for C,D in ipairs(o)do
-local E=e.button({
+for D,E in ipairs(A)do E:Destroy()end
+table.clear(A)
+for D,E in ipairs(p)do
+local F=e.button({
 Size=UDim2.new(1,0,0,28),
-BackgroundColor3=D==p and g.primary or g.surface2,
-Text=tostring(D),
-TextColor3=g.text,
+BackgroundColor3=E==q and selectedColor()or h.surface2,
+Text=tostring(E),
+TextColor3=h.text,
 TextSize=12,
 FontRole="semibold",
-LayoutOrder=C,
+LayoutOrder=D,
 ZIndex=12,
-},x)
+},y)
 
-E.MouseButton1Click:Connect(function()
-p=D
-t.Text=tostring(D)
+F.MouseButton1Click:Connect(function()
+q=E
+u.Text=tostring(E)
 paintOptions()
-B(false)
-if j.callback then j.callback(D)end
+C(false)
+if k.callback then k.callback(E)end
 end)
-table.insert(z,E)
+table.insert(A,F)
 end
 end
 
 buildOptions()
 
-t.MouseButton1Click:Connect(function()
-B(not q)
+u.MouseButton1Click:Connect(function()
+C(not r)
 end)
 
-local C={instance=l}
-function C.Set(D,E,F)
-if table.find(o,E)then
-p=E
-t.Text=tostring(E)
-if F~=false and j.callback then j.callback(E)end
+local D={instance=m}
+function D.Set(E,F,G)
+if table.find(p,F)then
+q=F
+u.Text=tostring(F)
+if G~=false and k.callback then k.callback(F)end
 end
 end
 
-function C.Get(D)return p end
+function D.Get(E)return q end
 
-function C.Refresh(D,E)
-o=E or{}
-if not table.find(o,p)then
-p=o[1]
-t.Text=tostring(p or"Seleccionar")
+function D.Refresh(E,F)
+p=F or{}
+if not table.find(p,q)then
+q=p[1]
+u.Text=tostring(q or"Seleccionar")
 end
 buildOptions()
-if q then B(true)end
+if r then C(true)end
 end
 
-l.Destroying:Connect(function()
+m.Destroying:Connect(function()
 disconnectOutside()
 raiseAncestors(false)
 end)
 
 
 d.onChange(function()
-u.ImageColor3=g.textMuted
+v.ImageColor3=h.textMuted
 paintOptions()
-end,l)
+end,m)
 
-return C
+return D
 end end function a.n():typeof(__modImpl())local b=a.cache.n if not b then b={c=__modImpl()}a.cache.n=b end return b.c end end do local function __modImpl()
 
 local b=game:GetService"UserInputService"
@@ -1914,11 +1995,9 @@ local b=game:GetService"UserInputService"
 local c=a.b()
 local d=a.g()
 local e=a.i()
+local f=a.e()
 
-local f=c.palette
-
-
-
+local g=c.palette
 
 
 
@@ -1927,83 +2006,87 @@ local f=c.palette
 
 
 
-return function(g,h)
-h=h or{}
-local i=h.description or h.desc or""local
 
-j, k, l=e.row(g,{
-title=h.title,
-description=i~=""and i or nil,
-color=h.color,
-order=h.order,
-border=h.border,
-},{height=44,controlWidth=100,controlHeight=26,compact=h.compact})
 
-local m=h.default
-local n=false
 
-local o=d.button({
+return function(h,i)
+i=i or{}
+local j=i.description or i.desc or""local
+
+k, l, m=e.row(h,{
+title=i.title,
+description=j~=""and j or nil,
+
+color=i.color~=nil and f.soften(i.color)or nil,
+order=i.order,
+border=i.border,
+},{height=44,controlWidth=100,controlHeight=26,compact=i.compact})
+
+local n=i.default
+local o=false
+
+local p=d.button({
 Size=UDim2.new(1,0,1,0),
-BackgroundColor3=f.black,
-Text=m and m.Name or"None",
+BackgroundColor3=g.black,
+Text=n and n.Name or"None",
 TextSize=11,
 FontRole="bold",
-},l)
+},m)
 
 
-c.bind(o,"TextColor3","text")
+c.bind(p,"TextColor3","text")
 
 local function resetBtn()
-o.Text=m and m.Name or"None"
-o.BackgroundColor3=f.black
+p.Text=n and n.Name or"None"
+p.BackgroundColor3=g.black
 end
 
-local p={}
+local q={}
 
-p[#p+1]=o.MouseButton1Click:Connect(function()
-n=true
-o.Text="..."
-o.BackgroundColor3=f.primary
+q[#q+1]=p.MouseButton1Click:Connect(function()
+o=true
+p.Text="..."
+p.BackgroundColor3=g.primary
 end)
 
-p[#p+1]=b.InputBegan:Connect(function(q,r)
-if n then
-if q.KeyCode==Enum.KeyCode.Escape then
-n=false
-elseif q.KeyCode~=Enum.KeyCode.Unknown then
-m=q.KeyCode
-n=false
-if h.onChanged then h.onChanged(m)end
+q[#q+1]=b.InputBegan:Connect(function(r,s)
+if o then
+if r.KeyCode==Enum.KeyCode.Escape then
+o=false
+elseif r.KeyCode~=Enum.KeyCode.Unknown then
+n=r.KeyCode
+o=false
+if i.onChanged then i.onChanged(n)end
 end
 resetBtn()
 return
 end
-if not r and m and q.KeyCode==m then
-if h.callback then h.callback()end
+if not s and n and r.KeyCode==n then
+if i.callback then i.callback()end
 end
 end)
 
 
-e.autoCleanup(j,p)
+e.autoCleanup(k,q)
 
-local q={instance=j}
-function q.Set(r,s)
-m=s
-o.Text=m and m.Name or"None"
+local r={instance=k}
+function r.Set(s,t)
+n=t
+p.Text=n and n.Name or"None"
 end
-function q.Get(r)return m end
+function r.Get(s)return n end
 
 
 
 c.onChange(function()
-if not n then
-o.BackgroundColor3=f.black
+if not o then
+p.BackgroundColor3=g.black
 else
-o.BackgroundColor3=f.primary
+p.BackgroundColor3=g.primary
 end
-end,j)
+end,k)
 
-return q
+return r
 end end function a.o():typeof(__modImpl())local b=a.cache.o if not b then b={c=__modImpl()}a.cache.o=b end return b.c end end do local function __modImpl()
 
 local b=a.b()
@@ -2117,7 +2200,8 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 
 local m=c.create("TextButton",{
 Name="Header",
-Size=UDim2.new(1,0,0,g.description and g.description~=""and 36 or 24),
+
+Size=UDim2.new(1,0,0,g.description and g.description~=""and 43 or 29),
 BackgroundTransparency=1,
 BorderSizePixel=0,
 Text="",
@@ -2138,13 +2222,13 @@ end)
 
 local n=c.create("TextLabel",{
 BackgroundTransparency=1,
-Position=UDim2.new(0,g.icon and g.icon~=""and 28 or 12,0,g.description and g.description~=""and 2 or 4),
-Size=UDim2.new(1,g.icon and g.icon~=""and-36 or-20,0,14),
+Position=UDim2.new(0,g.icon and g.icon~=""and 30 or 12,0,g.description and g.description~=""and 3 or 6),
+Size=UDim2.new(1,g.icon and g.icon~=""and-38 or-20,0,17),
 Text=g.title or"",
 TextColor3=e.text,
 TextTransparency=g.textTransparency,
 FontRole=g.fontRole or"body",
-TextSize=math.max(11,(g.textSize or 13)-1),
+TextSize=math.max(12,(g.textSize or 13)),
 TextXAlignment=resolveAlign(g.textXAlignment),
 TextYAlignment=Enum.TextYAlignment.Center,
 },m)
@@ -2159,8 +2243,8 @@ end
 
 local o
 if g.icon and g.icon~=""then
-o=c.icon(g.icon,12,{
-Position=UDim2.new(0,10,0.5,-6),
+o=c.icon(g.icon,14,{
+Position=UDim2.new(0,10,0.5,-7),
 ImageColor3=g.iconColor,
 },m)
 end
@@ -2169,13 +2253,13 @@ local p
 if g.description and g.description~=""then
 p=c.create("TextLabel",{
 BackgroundTransparency=1,
-Position=UDim2.new(0,g.icon and g.icon~=""and 28 or 12,0,18),
-Size=UDim2.new(1,g.icon and g.icon~=""and-36 or-20,0,12),
+Position=UDim2.new(0,g.icon and g.icon~=""and 30 or 12,0,22),
+Size=UDim2.new(1,g.icon and g.icon~=""and-38 or-20,0,14),
 Text=tostring(g.description),
 TextColor3=e.textMuted,
 TextTransparency=g.descTextTransparency,
 FontRole=g.descFontRole or"body",
-TextSize=9,
+TextSize=11,
 TextXAlignment=resolveAlign(g.textXAlignment),
 TextYAlignment=Enum.TextYAlignment.Center,
 },m)
@@ -2609,7 +2693,8 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 
 for J,K in ipairs(u)do
 local L=K.color~=nil
-local M=K.color
+
+local M=L and e.soften(K.color)or nil
 local N=K.textColor or f.text
 local O=K.iconColor or N
 
@@ -3463,13 +3548,35 @@ Z.MouseLeave:Connect(function()Z.ImageColor3=j.textMuted end)
 _.MouseEnter:Connect(function()_.ImageColor3=j.danger end)
 _.MouseLeave:Connect(function()_.ImageColor3=j.textMuted end)
 
+
+local function tweenWindowProps(aa,ab,ac)
+local ad=c:Create(I,ab or TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),aa)
+if ac then
+local ae
+ae=ad.Completed:Connect(function()
+if ae then ae:Disconnect()end
+ac()
+end)
+end
+ad:Play()
+return ad
+end
+G._tweenWindowProps=tweenWindowProps
+
 Z.MouseButton1Click:Connect(function()
 if K then G:Restore()else G:Minimize()end
 end)
 
 _.MouseButton1Click:Connect(function()
 if G.onClose then G.onClose()end
+
+local aa=I.Size
+tweenWindowProps({
+Size=UDim2.new(0,aa.X.Offset*0.85,0,aa.Y.Offset*0.85),
+BackgroundTransparency=1,
+},TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.In),function()
 G:Destroy()
+end)
 end)
 
 g.frame({
@@ -3658,8 +3765,21 @@ K=true
 L=I.Position
 M=I.Size
 
+
+tweenWindowProps({
+Size=UDim2.new(0,M.X.Offset*0.85,0,M.Y.Offset*0.85),
+BackgroundTransparency=1,
+},TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.In),function()
 I.Visible=false
 O.Visible=true
+
+O.Size=UDim2.new(0,140,0,24)
+O.BackgroundTransparency=1
+c:Create(O,TweenInfo.new(0.25,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{
+Size=UDim2.new(0,170,0,30),
+BackgroundTransparency=0,
+}):Play()
+end)
 
 if N then
 O.AnchorPoint=Vector2.new(0,0)
@@ -3675,10 +3795,18 @@ O.Visible=false
 I.Visible=true
 
 if L then I.Position=L end
+
+local ag=M or UDim2.new(0,r,0,s)
+I.Size=UDim2.new(0,ag.X.Offset*0.85,0,ag.Y.Offset*0.85)
+I.BackgroundTransparency=1
+tweenWindowProps({
+Size=ag,
+BackgroundTransparency=0,
+},TweenInfo.new(0.3,Enum.EasingStyle.Back,Enum.EasingDirection.Out),function()
 if M then
-I.Size=M
 G:_syncLayout(M.X.Offset,M.Y.Offset)
 end
+end)
 end
 
 function G.ToggleMinimize(af)
@@ -3706,13 +3834,36 @@ if ag then
 if K then
 G:Restore()
 else
+
 I.Visible=true
+local ah=M or UDim2.new(0,r,0,s)
+local ai,aj=ah.X.Offset,ah.Y.Offset
+I.Size=UDim2.new(0,ai*0.85,0,aj*0.85)
+I.BackgroundTransparency=1
+tweenWindowProps({
+Size=ah,
+BackgroundTransparency=0,
+},TweenInfo.new(0.28,Enum.EasingStyle.Back,Enum.EasingDirection.Out))
 end
 else
 if K then
 O.Visible=false
 end
+
+local ah=I.Size
+tweenWindowProps({
+Size=UDim2.new(0,ah.X.Offset*0.85,0,ah.Y.Offset*0.85),
+BackgroundTransparency=1,
+},TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.In),function()
 I.Visible=false
+
+if M then
+I.Size=M
+else
+I.Size=UDim2.new(0,r,0,s)
+end
+I.BackgroundTransparency=0
+end)
 end
 end
 
@@ -3853,7 +4004,7 @@ Active=true,
 ZIndex=200,
 },af)
 
-local b=ac.create("Frame",{
+local aj=ac.create("Frame",{
 Name="Dialog",
 Size=UDim2.new(0,280,0,150),
 Position=UDim2.new(0.5,0,0.5,0),
@@ -3865,7 +4016,7 @@ CornerRadius=UDim.new(0,14),
 Stroke={Color=Color3.fromRGB(45,45,55),Thickness=1,Transparency=0.5},
 },ai)
 
-ab.bind(b,"BackgroundColor3","surface")
+ab.bind(aj,"BackgroundColor3","surface")
 
 ac.label({
 Size=UDim2.new(1,-32,0,20),
@@ -3874,7 +4025,7 @@ Text=ag.title or"",
 FontRole="bold",
 TextSize=16,
 ZIndex=202,
-},b)
+},aj)
 
 ac.label({
 Size=UDim2.new(1,-32,0,60),
@@ -3885,64 +4036,64 @@ TextSize=13,
 TextWrapped=true,
 TextYAlignment=Enum.TextYAlignment.Top,
 ZIndex=202,
-},b)
+},aj)
 
-local c=ac.create("Frame",{
+local b=ac.create("Frame",{
 Position=UDim2.new(0,16,1,-52),
 Size=UDim2.new(1,-32,0,36),
 BackgroundTransparency=1,
 ZIndex=202,
-},b)
+},aj)
 
 ac.create("UIListLayout",{
 FillDirection=Enum.FillDirection.Horizontal,
 HorizontalAlignment=Enum.HorizontalAlignment.Right,
 VerticalAlignment=Enum.VerticalAlignment.Center,
 Padding=UDim.new(0,8),
-},c)
+},b)
 
-local d=false
+local c=false
 local function close()
-if d then return end
-d=true
-local e=aa:Create(b,
+if c then return end
+c=true
+local d=aa:Create(aj,
 TweenInfo.new(0.18,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
 {Size=UDim2.new(0,260,0,140)})
-e:Play()
-e.Completed:Connect(function()
+d:Play()
+d.Completed:Connect(function()
 ai:Destroy()
 end)
 end
 
-for e,f in ipairs(ah)do
-local g=f.style or"primary"
-local h=ac.button({
+for d,e in ipairs(ah)do
+local f=e.style or"primary"
+local g=ac.button({
 Size=UDim2.new(0,110,1,0),
-BackgroundColor3=g=="danger"and ad.danger
-or g=="primary"and ad.primary
+BackgroundColor3=f=="danger"and ad.danger
+or f=="primary"and ad.primary
 or ad.surface2,
-Text=f.text or"OK",
+Text=e.text or"OK",
 TextSize=13,
 ZIndex=203,
-AutoButtonColor=g~="ghost",
-},c)
-if g=="ghost"then
-h.BackgroundTransparency=0.4
+AutoButtonColor=f~="ghost",
+},b)
+if f=="ghost"then
+g.BackgroundTransparency=0.4
 end
-h.MouseButton1Click:Connect(function()
+g.MouseButton1Click:Connect(function()
 close()
-if f.callback then task.spawn(f.callback)end
+if e.callback then task.spawn(e.callback)end
 end)
 end
 
 
-aa:Create(b,
+aa:Create(aj,
 TweenInfo.new(0.25,Enum.EasingStyle.Back,Enum.EasingDirection.Out),
 {Size=UDim2.new(0,320,0,170)}):Play()
 
 return{
 Close=close,
-instance=b,
+instance=aj,
 }
 end
 
@@ -3972,12 +4123,12 @@ ag.ApplyTheme=aa.set
 
 
 function ag.CreateWindow(ah,ai)
-local b=type(ah)=="table"and type(ai)=="table"and ai or ah
-b=b or{}
-local c=ae.CreateWindow(b)
-ag._gui=c.gui
-ag._window=c
-return c
+local aj=type(ah)=="table"and type(ai)=="table"and ai or ah
+aj=aj or{}
+local b=ae.CreateWindow(aj)
+ag._gui=b.gui
+ag._window=b
+return b
 end
 
 function ag.SetMinimizeKey(ah)
@@ -3990,22 +4141,22 @@ end
 ag.SetToggleKey=ag.SetMinimizeKey
 
 function ag.Notify(ah,ai)
-local b
+local aj
 if type(ah)=="table"and type(ai)=="table"then
-b=ai
+aj=ai
 elseif type(ah)=="table"then
-b=ah
+aj=ah
 else
-b={message=ah,type=ai}
+aj={message=ah,type=ai}
 end
-return ad.show(b)
+return ad.show(aj)
 end
 ag.notify=ad.show
 
 function ag.Dialog(ah,ai)
-local b=type(ah)=="table"and type(ai)=="table"and ai or ah
+local aj=type(ah)=="table"and type(ai)=="table"and ai or ah
 assert(ag._gui,"[RevUI] Crea una ventana antes de mostrar un diálogo")
-return af.show(ag._gui,b)
+return af.show(ag._gui,aj)
 end
 
 for ah,ai in pairs(ac)do
