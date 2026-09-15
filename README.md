@@ -325,17 +325,29 @@ Cada botón (**exento de la regla del tema**: acepta colores custom; si no se pa
 | `callback`  | `function` | `nil`     | Se ejecuta al hacer click.                                         |
 
 ```lua
-tab:Card({
-    title = "Rat Dance",
-    subtitle = "ID: 123456789",
-    icon = "rbxassetid://123456789",
-    size = 3, -- 80px de alto, thumb 60px (como la card de emotes)
+local card = tab:Card({
+    title = "Skills",
+    subtitle = "Mi perfil",
+    icon = "sparkles",
+    size = 3,
     buttons = {
-        { icon = "play", callback = function() print("play") end },
-        { icon = "star", iconColor = Color3.fromRGB(245, 170, 50), callback = function() end },
-        { icon = "pencil", color = Color3.fromHex("#2D2D3A"), callback = function() end },
-        { icon = "trash", color = Color3.fromRGB(220, 60, 60), textColor = Color3.new(1,1,1), callback = function() end },
+        { title = "Run", callback = function() print("run") end },
     },
+})
+
+card:SetTitle("Nuevo título")
+card:SetSubtitle("Texto actualizado")
+card:SetIcon("rocket")
+card:SetProps({
+    title = "Perfil",
+    subtitle = "Actualizado",
+    size = 2,
+    border = true,
+})
+
+card:SetButtons({
+    { title = "Play", callback = function() end },
+    { title = "Stop", callback = function() end },
 })
 ```
 
