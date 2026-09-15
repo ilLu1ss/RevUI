@@ -295,12 +295,6 @@ end
 
 Tarjeta **horizontal** estilo "resultado de emote" (como las cards de búsqueda del emote menu), angosta y con 4 botones:
 
-```
-┌─────────────────────────────┐
-│ [thumb]  Title     ╎ [□][□] │
-│ [thumb]  subtitle  ╎ [□][□] │
-└─────────────────────────────┘
-```
 
 1. **Holder** (altura fija según `size`), 2. **Thumbnail a la izquierda** centrado verticalmente, 3. **Título + subtítulo** al centro, 4. **Separador invisible** (solo estructura), 5. **Grid de botones** a la derecha (2 columnas).
 
@@ -325,30 +319,132 @@ Cada botón (**exento de la regla del tema**: acepta colores custom; si no se pa
 | `callback`  | `function` | `nil`     | Se ejecuta al hacer click.                                         |
 
 ```lua
-local card = tab:Card({
-    title = "Skills",
-    subtitle = "Mi perfil",
-    icon = "sparkles",
-    size = 3,
-    buttons = {
-        { title = "Run", callback = function() print("run") end },
-    },
-})
+--[[
+    ═══════════════════════════════════════════════════════════════
+    Card.lua — API
+    ═══════════════════════════════════════════════════════════════
 
-card:SetTitle("Nuevo título")
-card:SetSubtitle("Texto actualizado")
-card:SetIcon("rocket")
-card:SetProps({
-    title = "Perfil",
-    subtitle = "Actualizado",
-    size = 2,
-    border = true,
-})
+    local card = tab:Card({ ... })       -- devuelve `element`
+    card.instance                        -- Frame raíz de la card
 
-card:SetButtons({
-    { title = "Play", callback = function() end },
-    { title = "Stop", callback = function() end },
-})
+    ───────────────────────────────────────────────────────────────
+    PROPIEDADES (config inicial)
+    ───────────────────────────────────────────────────────────────
+        title     : string
+        subtitle  : string   (alias: description, desc)
+        icon      : string | number | table
+                    - "rbxassetid://123"
+                    - "rbxasset://..."
+                    - "rbxthumb://type=...&id=...&w=..&h=.."
+                    - "user:123" | "player:123" | "player:Nombre"
+                    - "asset:123" | "catalog:123" | "item:123"
+                    - "bundle:123" | "game:123" | "group:123" | "badge:123"
+                    - 12345                     (número → rbxassetid)
+                    - { type="avatar", id=123 } (o userId / assetId)
+                    - "play"                    (nombre de icono Lucide)
+        buttons   : table    (máx 4)
+        size      : number 1..5  (default 3)
+        border    : boolean      (default false)
+        order     : number       (LayoutOrder)
+
+    ───────────────────────────────────────────────────────────────
+    FORMATO DE CADA BOTÓN
+    ───────────────────────────────────────────────────────────────
+        {
+            icon      = "play",              -- Lucide / content / "tipo:id"
+            title     = "Run",
+            callback  = function() end,
+            color     = Color3,              -- (opcional) relleno sólido
+            textColor = Color3,              -- (opcional)
+            iconColor = Color3,              -- (opcional)
+
+            -- O dropdown (no acepta description):
+            dropdown = {
+                options  = { "A", "B", { title="C", icon="star" } },
+                selected = "A",              -- opcional (se autoguarda)
+                callback = function(opt) end,
+                icon     = "chevron-down",   -- opcional
+            },
+        }
+
+    Reglas:
+      - máx 4 botones (si pasas más → error)
+      - color presente → botón sólido, el tema no lo pisa
+      - sin color      → surface + borde, hover a surface2
+      - dropdown NO lleva callback/title propios (el title = selección actual)
+
+    ───────────────────────────────────────────────────────────────
+    MÉTODOS
+    ───────────────────────────────────────────────────────────────
+
+    card:SetProp(name, value) -> element
+        Cambia UNA prop. Acepta props custom O cualquier prop del Frame.
+        Custom: title | subtitle/description/desc | icon | buttons | size | border
+        Otro  : se asigna directo al Frame (warn si falla)
+
+    card:SetProps(propsTable) -> element
+        Igual que SetProp pero varias a la vez.
+
+    card:Set(key, value) -> element
+        Alias flexible de SetProp. Acepta tabla (delega a SetProps).
+
+    card:SetTitle(text)    -> element
+    card:SetSubtitle(text) -> element
+    card:SetIcon(icon)     -> element
+        Atajos de SetProp. SetIcon acepta cualquier formato de `icon`.
+
+    card:SetButtons(buttonsTable) -> element
+        Reemplaza TODA la lista de botones (máx 4 o error).
+
+    card:SetButton(index, propsTable) -> element
+        Merge PARCIAL sobre un botón. Solo sobreescribe las claves pasadas.
+        Re-renderiza solo la grid. Dropdown mantiene su `selected`.
+
+    card:GetButton(index) -> table | nil
+        Config REAL (referencia) del botón en ese índice.
+
+    card:GetButtons() -> table
+        Copia shallow del array de configs.
+
+    card:Get(key?) -> any
+        Sin key : tabla con { title, subtitle, icon, buttons, size, border }
+        Con key : valor de esa prop (o card[key] del Frame)
+
+    ───────────────────────────────────────────────────────────────
+    EJEMPLO
+    ───────────────────────────────────────────────────────────────
+        local card = tab:Card({
+            title    = "Canción",
+            subtitle = "Artista",
+            icon     = "music",
+            size     = 3,
+            border   = false,
+            buttons  = {
+                { icon="play",  title="Play",  callback=function() end },
+                { icon="pause", title="Pause", callback=function() end },
+            },
+        })
+
+        -- en caliente:
+        card:SetTitle("Otra")
+        card:SetIcon("player:1")
+        card:SetButton(1, { icon="stop", title="Stop" })
+        card:SetButtons({ { icon="x", title="Cerrar" } })
+        card:SetProp("size", 5)
+        card:SetProps({ title="X", border=true })
+
+        -- lectura:
+        print(card:Get("title"))
+        print(card:GetButton(1).icon)
+        for i, b in ipairs(card:GetButtons()) do print(i, b.title) end
+
+        -- encadenable:
+        card:SetTitle("Hola"):SetIcon("star"):SetButton(1, { title="Ok" })
+
+        -- instancia:
+        card.instance.BackgroundTransparency = 0.5
+        card.instance:Destroy()
+]]
 ```
 
 - Sin `color`, los botones quedan **transparentes con solo el icono/texto** (como los botones play/star de las cards de emotes); el hover les da un fondo `surface2` del tema.
