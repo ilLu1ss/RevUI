@@ -1,69 +1,9 @@
 # 📚 RevUI — Documentación
 
-**RevUI** es una librería de UI para Roblox con API encadenada (fluent), pensada para hubs/scripts: ventanas con drag/resize, tabs, widgets declarativos, notificaciones, diálogos modulares y sistema de temas con repintado en vivo.
+**RevUI** es una librería de UI para Roblox con API encadenada, pensada para hubs/scripts
 
-> Filosofía: **cero posiciones, cero tamaños, cero colores manuales.** Solo tablas de configuración + callbacks.
+> Filosofía: Simple.
 
----
-
-## 📦 Instalación
-
-### Con Rojo (desarrollo)
-
-El proyecto ya está configurado en `default.project.json` para montar la librería en `ReplicatedStorage.RevUI`:
-
-```json
-"ReplicatedStorage": {
-    "RevUI": { "$path": "src/RevUI" }
-}
-```
-
-Sincroniza con:
-
-```
-rojo serve
-```
-
-Y conecta desde Studio con el plugin de Rojo.
-
-### Requiriendo la librería
-
-```lua
-local RevUI = require(game:GetService("ReplicatedStorage"):WaitForChild("RevUI"))
-```
-
-> En Studio se monta en `PlayerGui`; en ejecutores usa automáticamente `get_hidden_gui()` / `gethui()` / `syn.protect_gui()` si están disponibles, con fallback a `CoreGui`.
-
----
-
-## 🚀 Inicio rápido
-
-```lua
-local RevUI = require(game:GetService("ReplicatedStorage"):WaitForChild("RevUI"))
-
--- 1. Ventana
-local window = RevUI:CreateWindow({
-    title = "Mi Hub",
-    author = "tuUsuario",
-    version = "1.0",
-    icon = "skull",
-    theme = "forest",
-    toggleKey = Enum.KeyCode.RightShift,
-    width = 590,
-    height = 480,
-})
-
--- 2. Pestañas (el orden de creación = orden en la barra lateral)
-local inicio = window:Tab({ name = "Inicio", icon = "home" })
-
--- 3. Widgets
-inicio:Button({
-    title = "Hola mundo",
-    callback = function()
-        RevUI:Notify({ message = "¡Funciona!", type = "success" })
-    end,
-})
-```
 
 ---
 
@@ -199,6 +139,33 @@ local fov = tab:Slider({
 })
 -- Métodos: fov:Set(120), fov:Get()
 ```
+
+### `tab:Input(config)`
+
+| Propiedad      | Tipo            | Default    | Descripción                                       |
+| -------------- | --------------- | ---------- | ------------------------------------------------- |
+| `title`        | `string`        | `""`       | Título.                                           |
+| `description`  | `string`        | `""`       | Subtexto opcional.                                |
+| `placeholder`  | `string`        | `""`       | Texto de ayuda dentro del campo.                  |
+| `default`      | `string`        | `""`       | Texto inicial.                                    |
+| `controlWidth` | `number`        | `180`      | Ancho del campo (antes `200` → más aire para la descripción). |
+| `radius`       | `number`/`UDim` | cápsula    | Curva del campo. `UDim.new(1, 0)` = redondo; `8` = rect redondeado. |
+| `round`        | `boolean`       | `true`     | `false` → vuelve al rect redondeado de 8px.       |
+| `compact`      | `boolean`       | `nil`      | `true` → el campo baja debajo del título (lo fuerza `Stack`). |
+| `border`       | `boolean`       | `false`    | Borde alrededor de la fila.                       |
+| `callback`     | `function`      | `nil`      | `function(texto, enterPressed)` al perder el foco. |
+
+```lua
+local nombre = tab:Input({
+    title = "Nombre",
+    placeholder = "Escribe aquí...",
+    callback = function(texto) print("Nombre:", texto) end,
+})
+-- Métodos: nombre:Get(), nombre:Set("Rev"), nombre:OnChanged(fn)
+```
+
+- El campo es **redondo (cápsula)** y vive **a la derecha** de la fila; el texto interno lleva un inset lateral (`UIPadding`) para no cortarse con la curva.
+- Dentro de un `Stack` el campo se coloca debajo del título: pasa `compact = false` para mantenerlo a la derecha.
 
 ### `tab:Dropdown(config)`
 
@@ -395,6 +362,40 @@ tab:Label("Bienvenido a Mi Hub")
 tab:Label({ text = "Versión 1.0", color = Color3.fromRGB(255, 100, 100) })
 -- Métodos: label:SetText("nuevo texto")
 ```
+
+---
+
+## 🧷 Grupos automáticos (holders)
+
+Las filas que creas **seguidas** en el mismo contenedor se fusionan solas en un
+**solo holder redondeado**. No agrupas nada a mano: si no hay nada que las
+separe, se juntan; si metes un `Space`, vuelven a ser individuales.
+
+```lua
+tab:Button({ title = "Aimbot" })
+tab:Slider({ title = "FOV", min = 30, max = 200 })
+tab:Keybind({ title = "Tecla" })   -- estas TRES = un solo cuadro redondo
+
+tab:Space(10)                      -- rompe la regla
+
+tab:Toggle({ title = "ESP" })      -- esta = su propio cuadro
+tab:Input({ title = "Nombre" })    -- y se junta con la de arriba
+```
+
+- **Participan**: `Button`, `Toggle`, `Slider`, `Keybind`, `Input`.
+- **No participan** (y además **cortan** el grupo): `Space`, `Label`, `Card`, `Dropdown`, `HStack`/`VStack` y `Section`.
+- Una fila **sola** se ve exactamente como siempre: el holder nace recién cuando aparece el 2º elemento seguido.
+- Dentro del holder las filas conservan su hover, su `color` custom y el repintado de tema en vivo; el holder solo aporta la forma (radio + recorte).
+
+```lua
+RevUI.Groups.enabled  = false   -- apaga el agrupado (look clásico: una caja por fila)
+RevUI.Groups.dividers = false   -- sin la línea de 1px entre filas del grupo
+RevUI.Groups.radius   = 12      -- redondeo del holder
+
+tab:Button({ title = "Suelto", group = false })  -- esta fila no se agrupa
+```
+
+> El `Dropdown` queda fuera a propósito: su lista abierta se sale del row y el holder la recortaría.
 
 ---
 
@@ -626,6 +627,41 @@ end
 
 ---
 
+## 🔤 Fuentes (Fonts.lua)
+
+Roblox **eliminó la familia Gotham**: `Gotham`, `GothamMedium`, `GothamBold` y `GothamBlack` fueron removidos (mapean a Montserrat) y `GothamSemibold` fue **borrado del enum** en la v529. Eso rompía RevUI de dos maneras distintas:
+
+- `Font = Enum.Font.GothamSemibold` → el `pcall` de `Components.create` falla y solo se ve un `warn`: la fuente NO se aplica (parece que falla en silencio).
+- `Font.new("Gotham", peso)` → `Font family Gotham failed to load: Temp read failed.`
+
+Ahora **ningún** módulo asigna `Font`: se usa `Fonts.lua` (familias que sí existen, vía `FontFace`) con roles semánticos:
+
+| Rol | Peso |
+| --- | --- |
+| `"title"` | `SemiBold` (600) |
+| `"body"` | `Regular` (400) |
+| `"bold"` | `Bold` (700) |
+| `"medium"` | `Medium` (500) |
+
+```lua
+-- en cualquier config de elemento
+tab:Button({ title = "Hola", fontRole = "bold" })
+tab:Toggle({ title = "Aimbot", fontRole = "title", descFontRole = "medium" })
+
+-- cambiar TODA la UI en vivo (se reaplica a lo ya creado)
+RevUI.Fonts.setPreset("builder")   -- builder | montserrat | arimo | roboto | sourcesans
+RevUI.Fonts.setFamily("rbxasset://fonts/families/Roboto.json")
+RevUI.Fonts.setRole("title", Enum.FontWeight.Bold)
+
+-- a mano sobre una instancia de texto
+RevUI.Fonts.apply(miLabel, "title")
+miLabel.FontFace = RevUI.Fonts.face("body")
+```
+
+Por defecto usa **Montserrat** (`rbxasset://fonts/families/Montserrat.json`), que es exactamente a lo que Roblox mapea el viejo Gotham, así que el look no cambia. Si en tu cliente Montserrat no cargara, `RevUI.Fonts.setPreset("builder")` usa Builder Sans, la fuente propia de Roblox (viene incluida en el cliente).
+
+---
+
 ## 📐 Estructura del proyecto
 
 ```
@@ -641,14 +677,15 @@ revui/
         ├── Init.lua          # Punto de entrada (API pública)
         ├── Window.lua        # Ventana: drag, resize, minimize, tabs
         ├── Tab.lua           # Objeto tab + factory de widgets
-        ├── Widgets/          # Button, Toggle, Slider, Dropdown,
+        ├── Elements/         # Button, Toggle, Slider, Dropdown,
         │                     # Keybind, Section, Space
         ├── Notifications.lua # Sistema de toasts
         ├── Dialog.lua        # Modal de confirmación
         ├── Theme.lua         # Paleta + set() con repintado en vivo
         ├── Themes.lua        # Presets: dark, midnight, sunset, forest
         ├── Components.lua    # Primitivas (frame, button, label, icon...)
-        ├── WidgetKit.lua     # Plantilla de fila estándar de widget
+        ├── ElementKit.lua    # Plantilla de fila estándar de widget
+        ├── Fonts.lua         # Familias + roles de fuente (FontRole)
         ├── Icons.lua         # ~1700 iconos Lucide (rbxassetid)
         ├── SpecialKeys.lua   # Utilidades de teclas
         ├── Card.lua          # Componente card
@@ -668,6 +705,7 @@ revui/
 7. **Mínimos de resize**: `380×300` — diseña tu contenido para ese ancho mínimo.
 8. **Compatibilidad de API**: `RevUI:CreateWindow({...})`, `RevUI.CreateWindow({...})`, `RevUI:Notify({...})` y `RevUI.Notify({...})` funcionan igual.
 9. **`border = true` en cualquier widget**: Button, Toggle, Slider, Dropdown, Keybind, Input, Section y Card aceptan `border` (default `false`) para mostrar un borde `UIStroke` con el color `border` del tema. En `Section` funciona con o sin `box`.
+10. **Sizing inteligente por parent**: los widgets usan escala relativa (`1` de ancho) y se adaptan solos al espacio de su contenedor. El **parent define el área segura**: el contenido de una `Section` recibe un inset de 12px por lado **solo cuando hay borde visible** (`box = true` o `border = true`), así ninguna fila llega hasta el borde del shell. Sin box ni borde el contenido va flush y queda alineado con el resto de la tab. Lo mismo aplica a Stacks y Cards dentro de sections — heredan el inset automáticamente.
 
 ---
 
