@@ -2517,269 +2517,402 @@ end
 return function(n,o)
 o=o or{}
 
-local p=math.clamp(math.floor(tonumber(o.size)or 3),1,5)
-local q=g[p][1]
-local r=g[p][2]
-local s=o.title or o.Title or"Title"
-local t=o.subtitle or o.Subtitle or o.description or o.desc or""
-local u=o.buttons or{}
+local p={
+size=math.clamp(math.floor(tonumber(o.size)or 3),1,5),
+title=o.title or o.Title or"Title",
+subtitle=o.subtitle or o.Subtitle or o.description or o.desc or"",
+icon=o.icon,
+buttons=o.buttons or{},
+border=o.border==true,
+}
 
-if#u>h then
-error("[RevUI] Card: máximo 4 botones (recibidos "..#u..").",2)
+if#p.buttons>h then
+error("[RevUI] Card: máximo 4 botones (recibidos "..#p.buttons..").",2)
 end
 
+local q=g[p.size][1]
+local r=g[p.size][2]
 
 
 
-local v=c.frame({
-Name="Card:"..s,
+
+local s=c.frame({
+Name="Card:"..p.title,
 Size=UDim2.new(1,-2,0,q),
 BackgroundColor3=f.surface2,
 CornerRadius=UDim.new(0,10),
 LayoutOrder=o.order or 0,
 ClipsDescendants=true,
 },n)
-b.bind(v,"BackgroundColor3","surface2")
+b.bind(s,"BackgroundColor3","surface2")
 
+local t
 
-if o.border==true then
-local w=c.create("UIStroke",{
+if p.border then
+t=c.create("UIStroke",{
 Color=f.border,
 Thickness=1,
 Transparency=0.4,
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
-},v)
-b.bind(w,"Color","border")
+},s)
+b.bind(t,"Color","border")
 end
 
+local u
+local v
+local w
+local x
+local y
+local z
 
+local function renderThumb()
+if u and u.Parent then
+u:Destroy()
+end
 
-
-local w=o.icon~=nil and o.icon~=""
-local x=c.frame({
+local A=p.icon~=nil and p.icon~=""
+u=c.frame({
 Position=UDim2.new(0,i,0.5,-r/2),
 Size=UDim2.new(0,r,0,r),
 BackgroundColor3=f.surface,
 CornerRadius=UDim.new(0,8),
 BorderSizePixel=0,
 ClipsDescendants=true,
-},v)
-b.bind(x,"BackgroundColor3","surface")
+},s)
+b.bind(u,"BackgroundColor3","surface")
 
-if w then
+if A then
 c.imageLabel({
 Size=UDim2.new(1,0,1,0),
 BackgroundTransparency=1,
-Image=resolveImage(o.icon,"image"),
+Image=resolveImage(p.icon,"image"),
 ImageColor3=f.white,
 ScaleType=Enum.ScaleType.Fit,
-},x)
+},u)
 else
 c.icon("image",math.floor(r*0.4),{
 AnchorPoint=Vector2.new(0.5,0.5),
 Position=UDim2.new(0.5,0,0.5,0),
 ImageColor3=f.textMuted,
-},x)
+},u)
+end
 end
 
+local function renderText()
+if v and v.Parent then
+v:Destroy()
+end
 
+local A=#p.buttons>0
+local B=p.size
+local C=math.max(12,11+B)
+local D=math.max(9,9+B)
 
+local E=A and math.ceil(math.min(#p.buttons,h)/2)or 1
+local F=math.max(20,math.floor((q-16-(E-1)*4)/E))
+local G=2*F+l
+local H=A and 8 or 0
 
-
-
-local y=#u>0
-local z=y and math.ceil(math.min(#u,h)/2)or 1
-
-local A=math.max(20,math.floor((q-16-(z-1)*4)/z))
-local B=math.max(k,math.floor(q*j))
-
-local C=2*A+l
-local D=z*B+(z-1)*l
-
-
-
-
-local E=y and 8 or 0
-local F=c.create("Frame",{
+v=c.create("Frame",{
 Position=UDim2.new(0,i+r+10,0,0),
 Size=UDim2.new(
 1,
--(i+r+10+E+C+i),
+-(i+r+10+H+G+i),
 1,
 0
 ),
 BackgroundTransparency=1,
 BorderSizePixel=0,
-},v)
+},s)
 
-local G=math.max(12,11+p)
-local H=math.max(9,9+p)
-
-if t~=""then
-local I=c.create("TextLabel",{
+local I=tostring(p.subtitle or"")
+if I~=""then
+w=c.create("TextLabel",{
 Position=UDim2.new(0,0,0,math.floor(q*0.12)),
 Size=UDim2.new(1,0,0,22),
 BackgroundTransparency=1,
-Text=s,
+Text=tostring(p.title or"Title"),
 FontRole="bold",
-TextSize=G,
+TextSize=C,
 TextColor3=f.text,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextTruncate=Enum.TextTruncate.AtEnd,
-},F)
-b.bind(I,"TextColor3","text")
+},v)
+b.bind(w,"TextColor3","text")
 
-local J=c.create("TextLabel",{
+x=c.create("TextLabel",{
 Position=UDim2.new(0,0,0,math.floor(q*0.44)),
 Size=UDim2.new(1,0,0,16),
 BackgroundTransparency=1,
-Text=t,
+Text=I,
 FontRole="body",
-TextSize=H,
+TextSize=D,
 TextColor3=f.textMuted,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextTruncate=Enum.TextTruncate.AtEnd,
-},F)
-b.bind(J,"TextColor3","textMuted")
+},v)
+b.bind(x,"TextColor3","textMuted")
 else
-local I=c.create("TextLabel",{
+w=c.create("TextLabel",{
 AnchorPoint=Vector2.new(0,0.5),
 Position=UDim2.new(0,0,0.5,0),
 Size=UDim2.new(1,0,0,22),
 BackgroundTransparency=1,
-Text=s,
+Text=tostring(p.title or"Title"),
 FontRole="bold",
-TextSize=G,
+TextSize=C,
 TextColor3=f.text,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextTruncate=Enum.TextTruncate.AtEnd,
-},F)
-b.bind(I,"TextColor3","text")
+},v)
+b.bind(w,"TextColor3","text")
+x=nil
+end
 end
 
+local function renderButtons()
+if y and y.Parent then
+y:Destroy()
+end
+if z and z.Parent then
+z:Destroy()
+end
 
+local A=#p.buttons>0
+if not A then
+return
+end
 
+local B=math.ceil(math.min(#p.buttons,h)/2)
+local C=math.max(20,math.floor((q-16-(B-1)*4)/B))
+local D=math.max(k,math.floor(q*j))
+local E=2*C+l
+local F=B*D+(B-1)*l
 
-if y then
-c.create("Frame",{
+y=c.create("Frame",{
 Name="CardSeparator",
 AnchorPoint=Vector2.new(1,0.5),
-Position=UDim2.new(1,-(C+i),0.5,0),
-Size=UDim2.new(0,E,1,0),
+Position=UDim2.new(1,-(E+i),0.5,0),
+Size=UDim2.new(0,8,1,0),
 BackgroundTransparency=1,
 BorderSizePixel=0,
-},v)
-end
+},s)
 
-
-
-
-
-if y then
-local I=c.create("Frame",{
+z=c.create("Frame",{
 AnchorPoint=Vector2.new(1,0.5),
 Position=UDim2.new(1,-i,0.5,0),
-Size=UDim2.new(0,C,0,D),
+Size=UDim2.new(0,E,0,F),
 BackgroundTransparency=1,
 BorderSizePixel=0,
-},v)
+},s)
 
 c.create("UIGridLayout",{
-
-CellSize=UDim2.new(0,A,0,B),
+CellSize=UDim2.new(0,C,0,D),
 CellPadding=UDim2.new(0,l,0,l),
 SortOrder=Enum.SortOrder.LayoutOrder,
-},I)
+},z)
 
-for J,K in ipairs(u)do
-local L=K.color~=nil
+for G,H in ipairs(p.buttons)do
+local I=H.color~=nil
+local J=I and e.soften(H.color)or nil
+local K=H.textColor or f.text
+local L=H.iconColor or K
 
-local M=L and e.soften(K.color)or nil
-local N=K.textColor or f.text
-local O=K.iconColor or N
+local M=H.icon
+local N=H.title or H.text or H.label or""
+local O=M~=nil and M~=""
+local P=N~=""
 
-local P=K.icon
-local Q=K.title or K.text or K.label or""
-local R=P~=nil and P~=""
-local S=Q~=""
-
-
-
-local T=c.button({
-BackgroundColor3=M or f.surface2,
-BackgroundTransparency=L and 0 or 1,
+local Q=c.button({
+BackgroundColor3=J or f.surface2,
+BackgroundTransparency=I and 0 or 1,
 Text="",
 AutoButtonColor=false,
 CornerRadius=UDim.new(0,6),
-LayoutOrder=J,
-},I)
+LayoutOrder=G,
+},z)
 
-if L then
-
-d.hover(T,M)
+if I then
+d.hover(Q,J)
 else
-
-T.MouseEnter:Connect(function()
-T.BackgroundTransparency=0.85
-T.BackgroundColor3=f.surface2
+Q.MouseEnter:Connect(function()
+Q.BackgroundTransparency=0.85
+Q.BackgroundColor3=f.surface2
 end)
-T.MouseLeave:Connect(function()
-T.BackgroundTransparency=1
+Q.MouseLeave:Connect(function()
+Q.BackgroundTransparency=1
 end)
 end
 
-
-
-
-
-if R or S then
+if O or P then
 c.create("UIListLayout",{
 FillDirection=Enum.FillDirection.Horizontal,
 HorizontalAlignment=Enum.HorizontalAlignment.Center,
 VerticalAlignment=Enum.VerticalAlignment.Center,
-Padding=UDim.new(0,R and S and m or 0),
+Padding=UDim.new(0,O and P and m or 0),
 SortOrder=Enum.SortOrder.LayoutOrder,
-},T)
+},Q)
 end
 
-if R then
-local U=math.floor(math.min(A,B)*0.55)
+if O then
+local R=math.floor(math.min(C,D)*0.55)
 c.imageLabel({
-Size=UDim2.new(0,U,0,U),
+Size=UDim2.new(0,R,0,R),
 BackgroundTransparency=1,
-Image=resolveImage(P,"circle"),
-ImageColor3=O,
+Image=resolveImage(M,"circle"),
+ImageColor3=L,
 LayoutOrder=1,
 ZIndex=3,
-},T)
+},Q)
 end
 
-if S then
+if P then
 c.create("TextLabel",{
 Size=UDim2.new(0,0,1,0),
 AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,
-Text=Q,
+Text=N,
 FontRole="bold",
-TextSize=math.max(9,math.floor(B*0.45)),
-TextColor3=N,
+TextSize=math.max(9,math.floor(D*0.45)),
+TextColor3=K,
 TextXAlignment=Enum.TextXAlignment.Center,
 TextYAlignment=Enum.TextYAlignment.Center,
 TextTruncate=Enum.TextTruncate.AtEnd,
 LayoutOrder=2,
 ZIndex=3,
-},T)
+},Q)
 end
 
-T.MouseButton1Click:Connect(function()
-if K.callback then
-K.callback()
+Q.MouseButton1Click:Connect(function()
+if H.callback then
+H.callback()
 end
 end)
 end
 end
 
-return{instance=v}
+local function refreshCard()
+local A=math.clamp(math.floor(tonumber(p.size)or 3),1,5)
+q=g[A][1]
+r=g[A][2]
+s.Size=UDim2.new(1,-2,0,q)
+s.Name="Card:"..tostring(p.title or"Title")
+
+if t then
+t.Visible=p.border==true
+end
+
+renderThumb()
+renderText()
+renderButtons()
+end
+
+refreshCard()
+
+local A={instance=s}
+
+function A.SetProp(B,C,D)
+if type(C)=="table"then
+return A:SetProps(C)
+end
+
+local E=tostring(C)
+if E=="title"or E=="Title"then
+p.title=tostring(D or"")
+elseif E=="subtitle"or E=="Subtitle"or E=="description"or E=="description"or E=="desc"then
+p.subtitle=tostring(D or"")
+elseif E=="icon"or E=="Icon"then
+p.icon=D
+elseif E=="buttons"or E=="Buttons"then
+p.buttons=type(D)=="table"and D or{}
+if#p.buttons>h then
+error("[RevUI] Card: máximo 4 botones (recibidos "..#p.buttons..").",2)
+end
+elseif E=="size"or E=="Size"then
+p.size=math.clamp(math.floor(tonumber(D)or p.size),1,5)
+elseif E=="border"or E=="Border"then
+p.border=D==true
+else
+local F,G=pcall(function()
+s[E]=D
+end)
+if not F then
+warn("[RevUI] Card: propiedad inválida/inalcanzable -> "..E.." ("..tostring(G)..")")
+end
+return A
+end
+
+refreshCard()
+return A
+end
+
+function A.SetProps(B,C)
+C=C or{}
+if type(C)~="table"then
+return A
+end
+
+for D,E in pairs(C)do
+A:SetProp(D,E)
+end
+
+return A
+end
+
+function A.Set(B,C,D)
+if type(C)=="table"then
+return A:SetProps(C)
+end
+return A:SetProp(C,D)
+end
+
+function A.SetTitle(B,C)
+return A:SetProp("title",C)
+end
+
+function A.SetSubtitle(B,C)
+return A:SetProp("subtitle",C)
+end
+
+function A.SetIcon(B,C)
+return A:SetProp("icon",C)
+end
+
+function A.SetButtons(B,C)
+return A:SetProp("buttons",C)
+end
+
+function A.Get(B,C)
+if C==nil then
+return{
+title=p.title,
+subtitle=p.subtitle,
+icon=p.icon,
+buttons=p.buttons,
+size=p.size,
+border=p.border,
+}
+end
+
+local D=tostring(C)
+if D=="title"or D=="Title"then
+return p.title
+elseif D=="subtitle"or D=="Subtitle"or D=="description"or D=="desc"then
+return p.subtitle
+elseif D=="icon"or D=="Icon"then
+return p.icon
+elseif D=="buttons"or D=="Buttons"then
+return p.buttons
+elseif D=="size"or D=="Size"then
+return p.size
+elseif D=="border"or D=="Border"then
+return p.border
+end
+
+return s[D]
+end
+
+return A
 end end function a.r():typeof(__modImpl())local b=a.cache.r if not b then b={c=__modImpl()}a.cache.r=b end return b.c end end do local function __modImpl()
 
 
