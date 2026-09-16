@@ -2,6 +2,9 @@
 
 Mínimo para levantar RevUI:
 
+<!-- TODO imagen: sube `docs/public/example.png` y descomenta la línea de abajo -->
+<!-- ![preview](/example.png) -->
+
 ```lua
 local RevUI = require(game:GetService("ReplicatedStorage"):WaitForChild("RevUI"))
 
@@ -21,5 +24,3 @@ tab:Button({
     end,
 })
 ```
-
-> TODO imagen: sube `docs/public/example.png` y agrega `![preview](/example.png)` aquí.

@@ -1,6 +1,7 @@
 # Window
 
-> PARTE 1 — placeholder. Lo escribimos a fondo en la Parte 2.
+<!-- TODO imagen: sube `docs/public/window.png` y descomenta la línea de abajo -->
+<!-- ![window](/window.png) -->
 
 ```lua
 local window = RevUI:CreateWindow({ title = "Mi Hub" })
