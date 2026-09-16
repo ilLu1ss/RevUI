@@ -22,8 +22,4 @@ tab:Button({
 })
 ```
 
-::: tip Espacio para tu screenshot
-Pon tu imagen en `docs/public/example.png` y se mostrará aquí:
-
-![preview](/example.png)
-:::
+> TODO imagen: sube `docs/public/example.png` y agrega `![preview](/example.png)` aquí.
