@@ -1,6 +1,7 @@
 # Tab
 
-> PARTE 1 — placeholder. Lo escribimos a fondo en la Parte 2.
+<!-- TODO imagen: sube `docs/public/tab.png` y descomenta la línea de abajo -->
+<!-- ![tab](/tab.png) -->
 
 ```lua
 local tab = window:Tab({ name = "Inicio", icon = "home" })
