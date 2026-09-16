@@ -1,6 +1,6 @@
 # Button
 
-`Botón` tipico elemento infaltable. 
+`Button` tipico elemento infaltable. 
 
 <!-- TODO imagen: sube `docs/public/button.png` y descomenta la línea de abajo -->
 <!-- ![button](/button.png) -->
