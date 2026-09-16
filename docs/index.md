@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: 'RevUI'
-  text: 'UI para Roblox sin dolor'
-  tagline: Cero posiciones, cero tamaños, cero colores manuales.
+  text: 'UI para Roblox'
+  tagline: "Simpleza, fuidez y optimización"
   actions:
     - theme: brand
       text: Empezar
@@ -21,7 +21,5 @@ features:
   - title: Fluent API
     details: window:Tab({...}):Button({...}) — todo encadenado.
   - title: Temas en vivo
-    details: Theme.set() repinta toda la UI sin recrear nada.
-  - title: Contraste automático
-    details: Texto siempre legible sobre cualquier color.
+    details: Theme.set() 
 ---
