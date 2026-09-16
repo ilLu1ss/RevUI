@@ -1,6 +1,6 @@
 # Inicio rápido
 
-Mínimo para levantar RevUI:
+Mínimo para RevUI:
 
 <!-- TODO imagen: sube `docs/public/example.png` y descomenta la línea de abajo -->
 <!-- ![preview](/example.png) -->
