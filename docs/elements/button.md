@@ -10,11 +10,7 @@ tab:Button({
 })
 ```
 
-::: tip Espacio para tu screenshot
-Pon tu captura en `docs/public/button.png` y se mostrará aquí:
-
-![button](/button.png)
-:::
+> TODO imagen: sube `docs/public/button.png` y agrega `![button](/button.png)` aquí.
 
 ## Parámetros
 
